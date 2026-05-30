@@ -435,7 +435,7 @@
       const thumb = p.thumb ? `<img class="lc-thumb" src="${p.thumb}" loading="lazy" alt="">` : '';
       inner = kicker(p) +
         `<p class="body-text" style="margin-bottom:12px;">${p.body}</p>` +
-        `<a class="linkcard" href="${p.link}" target="_blank" rel="noopener">
+        `<a class="linkcard" href="${p.link}" target="_blank" rel="noopener" data-fetch-thumb="${p.link}">
           <div class="lc-text"><div class="lc-src">${p.source}</div><div class="lc-title">${p.title}</div></div>${thumb}</a>` +
         permalink(p);
     } else if (p.kind === 'article') {

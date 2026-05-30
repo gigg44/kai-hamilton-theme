@@ -88,15 +88,64 @@
     setIcon(); paint();
   });
 
+  /* --- OG thumbnail fetching for link cards --- */
+  (function () {
+    const CACHE_KEY = 'kh-og-cache-v1';
+    let cache = {};
+    try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
+    function saveCache() { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {} }
+
+    function applyThumb(card, url) {
+      if (!url) return;
+      const img = document.createElement('img');
+      img.className = 'lc-thumb';
+      img.src = url;
+      img.alt = '';
+      img.loading = 'lazy';
+      img.onerror = () => img.remove();
+      card.appendChild(img);
+    }
+
+    document.querySelectorAll('a.linkcard[data-fetch-thumb]').forEach(async (card) => {
+      if (card.querySelector('.lc-thumb')) return;
+      const link = card.dataset.fetchThumb;
+
+      if (cache[link] !== undefined) {
+        applyThumb(card, cache[link]);
+        return;
+      }
+
+      // show skeleton while fetching
+      const sk = document.createElement('div');
+      sk.className = 'lc-thumb-sk';
+      card.appendChild(sk);
+
+      try {
+        const res = await fetch('https://api.microlink.io/?url=' + encodeURIComponent(link));
+        const data = await res.json();
+        const imgUrl = data?.data?.image?.url || null;
+        cache[link] = imgUrl;
+        saveCache();
+        sk.remove();
+        applyThumb(card, imgUrl);
+      } catch {
+        sk.remove();
+        cache[link] = null;
+        saveCache();
+      }
+    });
+  })();
+
   /* --- youtube video facade --> real embed on click --- */
   document.querySelectorAll('.yt-screen[data-yt]').forEach((screen) => {
     screen.addEventListener('click', () => {
       const id = screen.dataset.yt;
       const ifr = document.createElement('iframe');
-      ifr.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
-      ifr.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-      ifr.allowFullscreen = true;
-      ifr.title = 'YouTube video';
+      ifr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
+      ifr.setAttribute('allowfullscreen', '');
+      ifr.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+      ifr.setAttribute('title', 'YouTube video');
+      ifr.style.cssText = 'width:100%;height:100%;border:0;display:block;';
       screen.replaceChildren(ifr);
       screen.style.cursor = 'default';
     });

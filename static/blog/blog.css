@@ -375,6 +375,7 @@ img{display:block;max-width:100%;}
 
 /* link card thumb */
 .linkcard img.lc-thumb{width:148px;flex:none;align-self:stretch;object-fit:cover;background:var(--surface-2);}
+.lc-thumb-sk{width:148px;flex:none;align-self:stretch;background:linear-gradient(100deg,var(--surface-2) 30%,var(--border) 50%,var(--surface-2) 70%);background-size:200% 100%;animation:shimmer 1.3s infinite;}
 
 /* article hero (real) */
 .article img.hero-img{width:100%;height:300px;object-fit:cover;display:block;background:var(--surface-2);}
