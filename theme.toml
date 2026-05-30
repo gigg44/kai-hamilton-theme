@@ -1,0 +1,11 @@
+name = "Kai-Hamilton Timeline"
+license = "MIT"
+licenselink = "https://opensource.org/licenses/MIT"
+description = "Timeline homepage theme for kai-hamilton.de"
+homepage = "https://kai-hamilton.de"
+tags = ["timeline", "personal", "microblog"]
+min_version = "0.91.0"
+
+[author]
+  name = "Kai-Hamilton Humburg"
+  homepage = "https://kai-hamilton.de"
