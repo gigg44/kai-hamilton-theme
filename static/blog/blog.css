@@ -404,7 +404,7 @@ img{display:block;max-width:100%;}
   .tl::before{left:6px;}
   .entry .date{position:relative;left:0;top:0;width:auto;text-align:left;margin-bottom:8px;display:flex;gap:8px;align-items:baseline;}
   .entry .date b{display:inline;}
-  .entry .node{left:0;top:6px;}
+  .entry .node{left:calc(-1 * var(--rail-x) + 3px);top:4px;}
   .nav-links a:not(.nav-rss){display:none;}
   .hero{padding-top:42px;}
   .gallery{grid-template-columns:1fr;}
