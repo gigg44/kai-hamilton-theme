@@ -134,7 +134,7 @@ img{display:block;max-width:100%;}
 .entry.is-hidden{display:none;}
 
 .entry .date{position:absolute;left:calc(-1 * var(--rail-x));top:2px;width:88px;text-align:right;
-  font-family:var(--font-mono);font-size:13px;line-height:1.25;color:var(--ink-2);}
+  font-family:var(--font-mono);font-size:13px;line-height:1.25;color:var(--ink-2);padding-right:10px;}
 .entry .date b{display:block;color:var(--ink);font-weight:700;font-size:15px;}
 .entry .date small{display:block;font-size:11px;color:var(--ink-3);}
 .entry .node{position:absolute;left:calc(-1 * var(--rail-x) + 88px + 0.5px);top:5px;width:13px;height:13px;border-radius:50%;
