@@ -136,7 +136,7 @@ img{display:block;max-width:100%;}
 .entry .date{position:absolute;left:calc(-1 * var(--rail-x));top:2px;width:88px;text-align:right;
   font-family:var(--font-mono);font-size:13px;line-height:1.25;color:var(--ink-2);}
 .entry .date b{display:block;color:var(--ink);font-weight:700;font-size:15px;}
-.entry .date small{font-size:11px;color:var(--ink-3);}
+.entry .date small{display:block;font-size:11px;color:var(--ink-3);}
 .entry .node{position:absolute;left:calc(-1 * var(--rail-x) + 88px + 0.5px);top:5px;width:13px;height:13px;border-radius:50%;
   background:var(--surface);border:2.5px solid var(--dot,var(--ink-3));box-shadow:0 0 0 4px var(--bg);z-index:1;}
 
@@ -336,6 +336,65 @@ img{display:block;max-width:100%;}
 .sk{aspect-ratio:2/3;border-radius:6px;background:linear-gradient(100deg,var(--surface-2) 30%,var(--border) 50%,var(--surface-2) 70%);
   background-size:200% 100%;animation:shimmer 1.3s infinite;}
 @keyframes shimmer{from{background-position:200% 0;}to{background-position:-200% 0;}}
+
+/* =========================================================================
+   POPULATED FEED — real images (rendered from feed.js)
+   ========================================================================= */
+.hero img.avatar{width:108px;height:108px;object-fit:cover;border-radius:50%;margin:0 auto 22px;display:block;
+  box-shadow:0 0 0 1px var(--border),0 8px 26px -12px rgba(0,0,0,.4);}
+
+/* single photo */
+.p-single{display:block;width:auto;max-width:100%;max-height:560px;border-radius:12px;
+  border:1px solid var(--border);box-shadow:var(--shadow);background:var(--surface-2);}
+.p-single.land{width:100%;max-height:none;}
+.p-poster{display:block;width:auto;height:300px;border-radius:8px;border:1px solid var(--border);box-shadow:var(--shadow);background:var(--surface-2);}
+
+/* photo grids */
+.p-grid{display:grid;gap:8px;}
+.p-grid img{width:100%;height:215px;object-fit:cover;border-radius:10px;border:1px solid var(--border);background:var(--surface-2);}
+.p-grid.g2{grid-template-columns:1fr 1fr;}
+.p-grid.g2 img{height:300px;}
+.p-grid.g3{grid-template-columns:repeat(3,1fr);}
+.p-grid.g4{grid-template-columns:repeat(2,1fr);}
+.p-grid.g4 img{height:240px;}
+.p-grid.g5,.p-grid.g6{grid-template-columns:repeat(3,1fr);}
+
+/* inline figure inside a note (e.g. text screenshots) */
+.p-figure{margin:12px 0 0;max-width:440px;}
+.p-figure img{width:100%;border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow);}
+
+/* video file */
+.p-videofile video{width:100%;border-radius:12px;display:block;background:#000;border:1px solid var(--border);}
+
+/* book entries (real covers) */
+.book img.b-cover{width:96px;height:142px;object-fit:cover;flex:none;border-radius:4px;
+  box-shadow:0 10px 26px -10px rgba(0,0,0,.45);background:var(--surface-2);}
+.book-feature img.bf-cover{width:158px;height:236px;object-fit:cover;border-radius:6px;
+  box-shadow:0 14px 34px -12px rgba(0,0,0,.5);background:var(--surface-2);}
+@media(max-width:640px){.book-feature img.bf-cover{width:130px;height:194px;}}
+
+/* link card thumb */
+.linkcard img.lc-thumb{width:148px;flex:none;align-self:stretch;object-fit:cover;background:var(--surface-2);}
+
+/* article hero (real) */
+.article img.hero-img{width:100%;height:300px;object-fit:cover;display:block;background:var(--surface-2);}
+.article .gameshot{width:100%;border-radius:8px;border:1px solid var(--border);margin:18px 0 4px;display:block;}
+.article .bestlist{margin:0 0 10px;padding-left:1.1em;}
+.article .bestlist li{font-size:18px;line-height:1.5;margin:2px 0;}
+.article .bestlist+h4,.article h4.bl-h{font-family:var(--font-head);font-weight:700;font-size:17px;margin:20px 0 8px;letter-spacing:-.01em;}
+
+@media(max-width:760px){
+  .p-grid.g3,.p-grid.g5,.p-grid.g6{grid-template-columns:1fr 1fr;}
+  .p-grid img{height:150px;}
+  .p-grid.g2 img{height:200px;}
+}
+
+/* quote / blockquote entries */
+.q-block{font-family:var(--font-body);font-size:20px;line-height:1.5;color:var(--ink);
+  border-left:3px solid var(--accent);padding:2px 0 2px 20px;margin:4px 0 0;}
+.q-block.de{font-style:normal;}
+.q-title{font-family:var(--font-head);font-weight:700;font-size:22px;letter-spacing:-.01em;margin:0 0 12px;color:var(--ink);}
+.q-cite{font-family:var(--font-mono);font-size:12px;color:var(--ink-3);margin-top:12px;display:inline-block;}
 
 /* ---------- responsive ---------- */
 @media(max-width:760px){
