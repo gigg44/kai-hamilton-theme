@@ -8,20 +8,25 @@
 
   /* --- filter chips --- */
   const chips = document.querySelectorAll('.chip[data-filter]');
-  const entries = [...document.querySelectorAll('.entry')];
-  // counts
-  chips.forEach((c) => {
-    const f = c.dataset.filter;
-    const ctEl = c.querySelector('.ct');
-    if (!ctEl) return;
-    const n = f === 'all' ? entries.length : entries.filter((e) => e.dataset.group === f).length;
-    ctEl.textContent = n;
-  });
+
+  function refreshFilters() {
+    const all = [...document.querySelectorAll('.entry')];
+    chips.forEach((c) => {
+      const f = c.dataset.filter;
+      const ctEl = c.querySelector('.ct');
+      if (!ctEl) return;
+      ctEl.textContent = f === 'all' ? all.length : all.filter((e) => e.dataset.group === f).length;
+    });
+  }
+  refreshFilters();
+  window.__refreshFilters = refreshFilters;
+
   chips.forEach((chip) => {
     chip.addEventListener('click', () => {
       chips.forEach((c) => c.setAttribute('aria-pressed', c === chip ? 'true' : 'false'));
       const f = chip.dataset.filter;
-      entries.forEach((e) => {
+      const active = chip.getAttribute('aria-pressed') === 'true' ? f : chip.dataset.filter;
+      document.querySelectorAll('.entry').forEach((e) => {
         e.classList.toggle('is-hidden', !(f === 'all' || e.dataset.group === f));
       });
     });

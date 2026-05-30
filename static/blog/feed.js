@@ -460,4 +460,59 @@
   POSTS.forEach((p) => tl.appendChild(render(p)));
   tl.insertAdjacentHTML('beforeend',
     '<div class="tl-end">— that\u2019s the start of the log · Sep 2024 —</div>');
+
+  /* ---------------------------------------------------------------------- */
+  /* LIVE POSTS — fetch /feed.json and prepend anything newer than the last  */
+  /* hardcoded entry (Apr 5 2026) so new micro.blog posts appear instantly   */
+  /* ---------------------------------------------------------------------- */
+  const LAST_HARDCODED = new Date('2026-04-05T20:03:00Z');
+  const MTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+  function guessGroup(content, tags) {
+    const t = (tags || []).map(s => s.toLowerCase());
+    const c = content || '';
+    if (t.some(x => ['books','book','reading','finished reading'].includes(x))) return ['books','book','▣','Books'];
+    if (t.some(x => ['anime','manga'].includes(x))) return ['watching','video','▶','Watching'];
+    if (t.some(x => ['watching','film','tv','video','movie'].includes(x))) return ['watching','video','▶','Watching'];
+    if (t.some(x => ['listening','podcast','music'].includes(x))) return ['listening','podcast','●','Listening'];
+    if (t.some(x => ['photos','photo'].includes(x))) return ['photos','photo','◆','Photos'];
+    if (t.some(x => ['writing','essay'].includes(x))) return ['writing','read','✍','Writing'];
+    if (c.includes('<img')) return ['photos','photo','◆','Photos'];
+    if (c.includes('youtube.com') || c.includes('youtu.be')) return ['watching','video','▶','Watching'];
+    return ['notes','note','▍','Note'];
+  }
+
+  function renderLive(item) {
+    const d = new Date(item.date_published);
+    const dateStr = MTHS[d.getMonth()] + ' ' + d.getDate();
+    const yearStr = String(d.getFullYear());
+    const content = item.content_html || '';
+    const [group, dt, gl, label] = guessGroup(content, item.tags);
+    const head = `<div class="date"><b>${dateStr}</b><small>${yearStr}</small></div><div class="node"></div>`;
+    const kick = `<div class="kicker"><span class="gl">${gl}</span>${label}</div>`;
+    const plink = `<a class="permalink" href="${item.url}" target="_blank" rel="noopener">→ permalink · ${dateStr} ${yearStr}</a>`;
+    const wrap = (group === 'photos' || group === 'watching') ? 'media' : 'measure';
+    const title = item.title ? `<h3 style="font-family:var(--font-head);font-weight:700;font-size:22px;margin:0 0 8px;letter-spacing:-.01em;">${item.title}</h3>` : '';
+    const inner = kick + title + `<div class="body-text">${content}</div>` + plink;
+    const el = document.createElement('article');
+    el.className = 'entry';
+    el.dataset.type = dt;
+    el.dataset.group = group;
+    el.dataset.liveId = item.id;
+    el.innerHTML = head + `<div class="${wrap}">${inner}</div>`;
+    return el;
+  }
+
+  fetch('/feed.json')
+    .then(r => r.json())
+    .then(data => {
+      const newItems = (data.items || [])
+        .filter(item => new Date(item.date_published) > LAST_HARDCODED)
+        .sort((a, b) => new Date(b.date_published) - new Date(a.date_published));
+      if (!newItems.length) return;
+      const first = tl.firstChild;
+      newItems.forEach(item => tl.insertBefore(renderLive(item), first));
+      if (typeof window.__refreshFilters === 'function') window.__refreshFilters();
+    })
+    .catch(() => {});
 })();
