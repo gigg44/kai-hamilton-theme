@@ -461,158 +461,85 @@
   tl.insertAdjacentHTML('beforeend',
     '<div class="tl-end">— that\u2019s the start of the log · Sep 2024 —</div>');
 
-  // ── Live feed: auto-load new micro.blog posts ──────────────────────────
-  // POSTS above are hand-curated. Everything published after CUTOFF loads
-  // live from /feed.json so new posts appear without editing this file.
-  const CUTOFF = '2026-04-05'; // date of the newest entry in POSTS above
+  /* ---------------------------------------------------------------------- */
+  /* LIVE POSTS — fetch /feed.json and prepend anything newer than the last  */
+  /* hardcoded entry (Apr 5 2026) so new micro.blog posts appear instantly   */
+  /* ---------------------------------------------------------------------- */
+  const LAST_HARDCODED = new Date('2026-04-05T20:03:00Z');
+  const MTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-  function inferPostMeta(tags, href) {
-    const h = (href || '').toLowerCase();
-    const t = (tags || []).map((s) => s.toLowerCase());
-    if (t.includes('gaming') || t.includes('games'))
-      return { group: 'watching', dt: 'video', k: K.play };
-    if (t.includes('anime'))
-      return { group: 'watching', dt: 'video', k: K.anime };
-    if (t.includes('books') || t.includes('book'))
-      return { group: 'books', dt: 'book', k: K.finished };
-    if (h.includes('overcast.fm') || t.includes('podcast'))
-      return { group: 'listening', dt: 'podcast', k: K.pod };
-    if (h.includes('youtube.com') || h.includes('youtu.be'))
-      return { group: 'watching', dt: 'video', k: K.watch };
-    return { group: 'notes', dt: 'link', k: K.link };
+  function guessGroup(content, tags) {
+    const t = (tags || []).map(s => s.toLowerCase());
+    const c = content || '';
+    if (t.some(x => ['books','book','reading','finished reading'].includes(x))) return ['books','book','▣','Books'];
+    if (t.some(x => ['anime','manga'].includes(x))) return ['watching','video','▶','Watching'];
+    if (t.some(x => ['watching','film','tv','video','movie'].includes(x))) return ['watching','video','▶','Watching'];
+    if (t.some(x => ['listening','podcast','music'].includes(x))) return ['listening','podcast','●','Listening'];
+    if (t.some(x => ['photos','photo'].includes(x))) return ['photos','photo','◆','Photos'];
+    if (t.some(x => ['writing','essay'].includes(x))) return ['writing','read','✍','Writing'];
+    if (c.includes('<img')) return ['photos','photo','◆','Photos'];
+    if (c.includes('youtube.com') || c.includes('youtu.be')) return ['watching','video','▶','Watching'];
+    return ['notes','note','▍','Note'];
   }
 
-  function extractYtId(href) {
-    const m = href.match(/[?&]v=([^&#]+)/) || href.match(/youtu\.be\/([^?&#/]+)/);
+  function extractYtId(content) {
+    // Covers: watch?v=, youtu.be/, embed/, shorts/, v/ — in both href attrs and iframe srcs
+    const m = content.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return m ? m[1] : null;
   }
 
-  function parseFeedItem(item) {
-    const url = item.url.replace('https://kai-hamilton.de', '');
-    const tags = item.tags || [];
-    const d = item.date_published.slice(0, 10);
-    const t = item.date_published.slice(11, 16);
+  function renderLive(item) {
+    const d = new Date(item.date_published);
+    const dateStr = MTHS[d.getMonth()] + ' ' + d.getDate();
+    const yearStr = String(d.getFullYear());
+    const content = item.content_html || '';
+    const ytId = extractYtId(content);
+    const [group, dt, gl, label] = guessGroup(content, item.tags);
+    const head = `<div class="date"><b>${dateStr}</b><small>${yearStr}</small></div><div class="node"></div>`;
+    const kick = `<div class="kicker"><span class="gl">${gl}</span>${label}</div>`;
+    const plink = `<a class="permalink" href="${item.url}" target="_blank" rel="noopener">→ permalink · ${dateStr} ${yearStr}</a>`;
+    const title = item.title ? `<h3 style="font-family:var(--font-head);font-weight:700;font-size:22px;margin:0 0 8px;letter-spacing:-.01em;">${item.title}</h3>` : '';
 
-    const div = document.createElement('div');
-    div.innerHTML = item.content_html || '';
-
-    // Book post (micro.blog book-tracking format)
-    if (div.querySelector('.microblog_book')) {
-      const bookImg = div.querySelector('.microblog_book');
-      const isbn = (bookImg.src || '').match(/books\/([^/]+)\/cover/)?.[1];
-      const titleEl = div.querySelector('a[href*="micro.blog/books"]');
-      const titleText = titleEl?.textContent.trim() || item.title || '';
-      const byMatch = div.textContent.match(/by\s+(.+?)(?:\s*📚|$)/u);
-      const author = byMatch ? byMatch[1].trim() : '';
-      const bodyParas = [...div.querySelectorAll('p')].slice(1);
-      const body = bodyParas.map((p) => p.innerHTML.trim()).filter(Boolean).join('|');
-      return {
-        kind: 'book', d, t, url,
-        group: 'books', dt: 'book', k: K.finished,
-        cover: isbn ? BK(isbn) : '', title: titleText, meta: author, body,
-        link: isbn ? BL(isbn) : (titleEl?.href || ''),
-      };
+    let inner, wrap;
+    if (ytId) {
+      // Strip YouTube links and any iframe embeds micro.blog may have added
+      const bodyText = content
+        .replace(/<iframe[^>]*(?:youtube\.com|youtu\.be)[^>]*>[\s\S]*?<\/iframe>/gi, '')
+        .replace(/<a[^>]*(?:youtube\.com|youtu\.be)[^>]*>[\s\S]*?<\/a>/gi, '')
+        .replace(/<p>\s*<\/p>/g, '')
+        .trim();
+      const capTitle = item.title || '';
+      const player = `<div class="player pl-video">
+        <div class="yt-screen" data-yt="${ytId}" role="button" tabindex="0" aria-label="Play video">
+          <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="" loading="lazy">
+          <div class="scrim"></div><span class="yt-badge">YOUTUBE</span><div class="yt-play"></div>
+        </div>${capTitle ? `<div class="yt-cap"><h4>${capTitle}</h4></div>` : ''}</div>`;
+      inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
+      wrap = 'media';
+    } else {
+      wrap = (group === 'photos' || group === 'watching') ? 'media' : 'measure';
+      inner = kick + title + `<div class="body-text">${content}</div>` + plink;
     }
 
-    const links = [...div.querySelectorAll('a')].filter((a) => a.href);
-
-    // YouTube URL => video embed
-    const ytLink = links.find((a) => extractYtId(a.href));
-    if (ytLink) {
-      const id = extractYtId(ytLink.href);
-      const clone = div.cloneNode(true);
-      clone.querySelectorAll('a').forEach((a) => a.replaceWith(''));
-      const body = clone.textContent.trim().replace(/\s+/g, ' ');
-      return {
-        kind: 'video', d, t, url,
-        group: 'watching', dt: 'video', k: K.watch,
-        body, yt: id, capTitle: item.title || '', channel: 'YouTube',
-        _ytId: id,
-      };
-    }
-
-    // External link => link card
-    const extLink = links.find((a) => {
-      try { return new URL(a.href).hostname !== 'kai-hamilton.de'; } catch { return false; }
-    });
-    if (extLink) {
-      const meta = inferPostMeta(tags, extLink.href);
-      const clone = div.cloneNode(true);
-      clone.querySelectorAll('a').forEach((a) => a.replaceWith(document.createTextNode(a.textContent)));
-      const fullText = clone.textContent.trim().replace(/\s+/g, ' ');
-      const linkText = extLink.textContent.trim();
-      const body = fullText.replace(linkText, '').trim().replace(/\s+/g, ' ') || fullText;
-      let source = '';
-      try { source = new URL(extLink.href).hostname.replace(/^www\./, ''); } catch {}
-      const isRawUrl = linkText === source || linkText.includes('.com/') || linkText.includes('.fm/');
-      const title = isRawUrl ? (item.title || source) : linkText;
-      return { kind: 'link', d, t, url, ...meta, body, source, title, link: extLink.href };
-    }
-
-    // Plain note
-    return { kind: 'note', d, t, url, group: 'notes', dt: 'note', k: K.note, body: div.innerHTML.trim() };
+    const el = document.createElement('article');
+    el.className = 'entry';
+    el.dataset.type = ytId ? 'video' : dt;
+    el.dataset.group = ytId ? 'watching' : group;
+    el.dataset.liveId = item.id;
+    el.innerHTML = head + `<div class="${wrap}">${inner}</div>`;
+    return el;
   }
 
-  function rewireEntry(el) {
-    el.querySelectorAll('.yt-screen[data-yt]').forEach((screen) => {
-      screen.addEventListener('click', () => {
-        const id = screen.dataset.yt;
-        const ifr = document.createElement('iframe');
-        ifr.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&rel=0';
-        ifr.setAttribute('allowfullscreen', '');
-        ifr.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
-        ifr.setAttribute('title', 'YouTube video');
-        ifr.style.cssText = 'width:100%;height:100%;border:0;display:block;';
-        screen.replaceChildren(ifr);
-        screen.style.cursor = 'default';
-      });
-    });
-  }
-
-  function refreshChipCounts() {
-    const all = [...document.querySelectorAll('.entry')];
-    document.querySelectorAll('.chip[data-filter]').forEach((c) => {
-      const ctEl = c.querySelector('.ct');
-      if (!ctEl) return;
-      const f = c.dataset.filter;
-      ctEl.textContent = f === 'all' ? all.length : all.filter((e) => e.dataset.group === f).length;
-    });
-  }
-
-  async function loadLivePosts() {
-    let items;
-    try {
-      const r = await fetch('/feed.json');
-      if (!r.ok) return;
-      ({ items } = await r.json());
-    } catch { return; }
-
-    const live = items
-      .filter((it) => it.date_published.slice(0, 10) > CUTOFF)
-      .map(parseFeedItem)
-      .reverse(); // oldest-first so newest ends up at the top after prepend
-    if (!live.length) return;
-
-    const first = tl.firstChild;
-    live.forEach((p) => { const el = render(p); tl.insertBefore(el, first); rewireEntry(el); });
-    refreshChipCounts();
-
-    // Async: fill YouTube titles via oEmbed (no API key needed)
-    live.filter((p) => p._ytId).forEach(async (p) => {
-      try {
-        const r = await fetch('https://www.youtube.com/oembed?url=' + encodeURIComponent('https://youtube.com/watch?v=' + p._ytId) + '&format=json');
-        if (!r.ok) return;
-        const { title, author_name } = await r.json();
-        const screen = tl.querySelector('.yt-screen[data-yt="' + p._ytId + '"]');
-        if (!screen) return;
-        const cap = screen.closest('.pl-video')?.querySelector('.yt-cap h4');
-        const ch = screen.closest('.pl-video')?.querySelector('.ch');
-        if (cap && !cap.textContent.trim()) cap.textContent = title || '';
-        if (ch) ch.textContent = author_name || 'YouTube';
-      } catch {}
-    });
-  }
-
-  loadLivePosts();
-
+  fetch('/feed.json')
+    .then(r => r.json())
+    .then(data => {
+      const newItems = (data.items || [])
+        .filter(item => new Date(item.date_published) > LAST_HARDCODED)
+        .sort((a, b) => new Date(b.date_published) - new Date(a.date_published));
+      if (!newItems.length) return;
+      const first = tl.firstChild;
+      newItems.forEach(item => tl.insertBefore(renderLive(item), first));
+      if (typeof window.__refreshFilters === 'function') window.__refreshFilters();
+    })
+    .catch(() => {});
 })();
