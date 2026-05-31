@@ -483,7 +483,8 @@
   }
 
   function extractYtId(content) {
-    const m = content.match(/(?:youtube\.com\/watch\?[^"']*v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    // Covers: watch?v=, youtu.be/, embed/, shorts/, live/, v/ — in href attrs and iframe srcs
+    const m = content.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return m ? m[1] : null;
   }
 
@@ -501,14 +502,19 @@
 
     let inner, wrap;
     if (ytId) {
-      // strip the youtube link from the body text
-      const bodyText = content.replace(/<a[^>]*(?:youtube\.com|youtu\.be)[^>]*>.*?<\/a>/gi, '').replace(/<p>\s*<\/p>/g,'').trim();
+      // Strip YouTube links and any iframe embeds micro.blog may have added
+      const bodyText = content
+        .replace(/<iframe[^>]*(?:youtube\.com|youtu\.be)[^>]*>[\s\S]*?<\/iframe>/gi, '')
+        .replace(/<a[^>]*(?:youtube\.com|youtu\.be)[^>]*>[\s\S]*?<\/a>/gi, '')
+        .replace(/<p>\s*<\/p>/g, '')
+        .trim();
+      const capTitle = item.title || '';
       const player = `<div class="player pl-video">
         <div class="yt-screen" data-yt="${ytId}" role="button" tabindex="0" aria-label="Play video">
           <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="" loading="lazy">
           <div class="scrim"></div><span class="yt-badge">YOUTUBE</span><div class="yt-play"></div>
-        </div></div>`;
-      inner = kick + title + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
+        </div>${capTitle ? `<div class="yt-cap"><h4>${capTitle}</h4></div>` : ''}</div>`;
+      inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
       wrap = 'media';
     } else {
       wrap = (group === 'photos' || group === 'watching') ? 'media' : 'measure';
