@@ -484,7 +484,7 @@
 
   function extractYtId(content) {
     // Covers: watch?v=, youtu.be/, embed/, shorts/, v/ — in both href attrs and iframe srcs
-    const m = content.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    const m = content.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
     return m ? m[1] : null;
   }
 
