@@ -518,7 +518,13 @@
       wrap = 'media';
     } else {
       wrap = (group === 'photos' || group === 'watching') ? 'media' : 'measure';
-      inner = kick + title + `<div class="body-text">${content}</div>` + plink;
+      const imgs = [];
+      const textOnly = content
+        .replace(/<img[^>]*src="([^"]+)"[^>]*>/g, (m, src) => { imgs.push({s: src}); return ''; })
+        .replace(/<p>\s*<\/p>/g, '')
+        .trim();
+      const imgBlock = imgs.length ? imagesBlock(imgs) : '';
+      inner = kick + title + (textOnly ? `<div class="body-text">${textOnly}</div>` : '') + imgBlock + plink;
     }
 
     const el = document.createElement('article');
