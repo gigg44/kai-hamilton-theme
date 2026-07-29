@@ -20,6 +20,7 @@
   --c-music: oklch(0.62 0.15 345);
   --c-pod:   oklch(0.60 0.12 155);
   --c-book:  oklch(0.64 0.13 50);
+  --c-game:  oklch(0.62 0.15 230);
   --c-link:  var(--accent);
 
   --maxw: 1100px;
@@ -71,7 +72,7 @@
 }
 [data-cat="off"]{
   --c-read:var(--ink-3);--c-video:var(--ink-3);--c-photo:var(--ink-3);
-  --c-music:var(--ink-3);--c-pod:var(--ink-3);--c-book:var(--ink-3);--c-link:var(--ink-3);
+  --c-music:var(--ink-3);--c-pod:var(--ink-3);--c-book:var(--ink-3);--c-game:var(--ink-3);--c-link:var(--ink-3);
 }
 
 *{box-sizing:border-box;}
@@ -147,6 +148,7 @@ img{display:block;max-width:100%;}
 .entry[data-type="music"]  .node{--dot:var(--c-music);}
 .entry[data-type="podcast"].node,.entry[data-type="podcast"] .node{--dot:var(--c-pod);}
 .entry[data-type="book"]   .node{--dot:var(--c-book);}
+.entry[data-type="game"]   .node{--dot:var(--c-game);}
 .entry[data-type="link"]   .node{--dot:var(--c-link);}
 
 /* kicker label per type */
@@ -159,6 +161,7 @@ img{display:block;max-width:100%;}
 .entry[data-type="music"]  .kicker{--kc:var(--c-music);}
 .entry[data-type="podcast"] .kicker{--kc:var(--c-pod);}
 .entry[data-type="book"]   .kicker{--kc:var(--c-book);}
+.entry[data-type="game"]   .kicker{--kc:var(--c-game);}
 .entry[data-type="link"]   .kicker{--kc:var(--c-link);}
 
 /* text posts sit in a comfy measure; media breaks wider */
@@ -323,6 +326,15 @@ img{display:block;max-width:100%;}
 .book-card .bc-title{font-family:var(--font-head);font-weight:600;font-size:16.5px;line-height:1.2;color:var(--ink);text-decoration:none;}
 .book-card:hover .bc-title{text-decoration:underline;text-underline-offset:3px;}
 .book-card .bc-author{font-size:15px;color:var(--ink-2);font-family:var(--font-body);font-style:italic;margin-top:-4px;}
+
+.game-card{display:flex;flex-direction:column;gap:12px;}
+.game-card .cover{position:relative;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--surface-2);
+  box-shadow:0 12px 28px -12px rgba(0,0,0,.5),0 0 0 1px var(--border);transition:transform .2s ease,box-shadow .2s ease;}
+.game-card .cover img{width:100%;height:100%;object-fit:cover;display:block;}
+.game-card:hover .cover{transform:translateY(-4px);box-shadow:0 20px 38px -14px rgba(0,0,0,.55),0 0 0 1px var(--border-2);}
+.game-card .gc-title{font-family:var(--font-head);font-weight:600;font-size:16.5px;line-height:1.2;color:var(--ink);text-decoration:none;}
+.game-card:hover .gc-title{text-decoration:underline;text-underline-offset:3px;}
+.game-card .gc-platform{font-size:15px;color:var(--ink-2);font-family:var(--font-body);font-style:italic;margin-top:-4px;}
 
 /* anime: score + meta on covers */
 .cover .score-badge{position:absolute;bottom:8px;right:8px;font-family:var(--font-mono);font-size:11px;font-weight:700;

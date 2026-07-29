@@ -472,6 +472,7 @@
     const t = (tags || []).map(s => s.toLowerCase());
     const c = content || '';
     if (t.some(x => ['books','book','reading','finished reading'].includes(x))) return ['books','book','▣','Books'];
+    if (t.some(x => ['games','game','gaming'].includes(x))) return ['games','game','◆','Games'];
     if (t.some(x => ['anime','manga'].includes(x))) return ['watching','video','▶','Watching'];
     if (t.some(x => ['watching','film','tv','video','movie'].includes(x))) return ['watching','video','▶','Watching'];
     if (t.some(x => ['listening','podcast','music'].includes(x))) return ['listening','podcast','●','Listening'];
@@ -517,7 +518,7 @@
       inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
       wrap = 'media';
     } else {
-      wrap = (group === 'photos' || group === 'watching') ? 'media' : 'measure';
+      wrap = (group === 'photos' || group === 'watching' || group === 'games') ? 'media' : 'measure';
       const imgs = [];
       const textOnly = content
         .replace(/<img[^>]*src="([^"]+)"[^>]*>/g, (m, src) => { imgs.push({s: src}); return ''; })
