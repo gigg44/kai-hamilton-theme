@@ -118,10 +118,11 @@ img{display:block;max-width:100%;}
 .hero .status [data-w="music"]{--dot:var(--c-music);}
 .hero .status [data-w="anime"]{--dot:var(--c-video);}
 .hero .status [data-w="manga"]{--dot:var(--c-book);}
-.hero .status b{font-weight:700;}
+.hero .status b{font-weight:700;white-space:nowrap;flex:none;}
 /* titles keep their own casing — .meta's uppercase makes long anime titles unreadable */
 .hero .status a{display:inline-block;max-width:min(52vw,340px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--border);}
 .hero .status a:hover{color:var(--ink);border-bottom-color:currentColor;}
+.hero .status em{font-style:normal;white-space:nowrap;flex:none;}
 
 /* ---------- filter chips ---------- */
 .filters{max-width:var(--maxw);margin:0 auto;padding:14px 28px 8px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;position:sticky;top:62px;z-index:30;}

@@ -15,13 +15,16 @@
     });
   }
 
-  function fill(key, label, text, href) {
+  /* `suffix` (Ep 12, Ch 8, the artist) stays outside the truncating anchor —
+     it's the actual information, and a long title must not eat it. */
+  function fill(key, label, title, suffix, href) {
     var el = document.querySelector('#status [data-w="' + key + '"]');
-    if (!el || !text) return;
+    if (!el || !title) return;
     el.innerHTML =
       '<i></i><b>' + esc(label) + '</b>' +
-      '<a href="' + esc(href) + '" target="_blank" rel="noopener" title="' + esc(text) + '">' +
-      esc(text) + '</a>';
+      '<a href="' + esc(href) + '" target="_blank" rel="noopener" title="' +
+      esc(title + (suffix ? ' — ' + suffix : '')) + '">' + esc(title) + '</a>' +
+      (suffix ? '<em>' + esc(suffix) + '</em>' : '');
     el.hidden = false;
   }
 
@@ -35,8 +38,10 @@
       if (!t) return;
       var nowPlaying = t['@attr'] && t['@attr'].nowplaying;
       var artist = t.artist && (t.artist['#text'] || t.artist.name);
+      // no suffix here: a track has no episode number to protect, so the whole
+      // "Artist — Track" reads as one truncating unit
       fill('music', nowPlaying ? 'Now playing' : 'Last played',
-           artist ? artist + ' — ' + t.name : t.name,
+           artist ? artist + ' — ' + t.name : t.name, '',
            t.url || 'https://www.last.fm/user/' + LASTFM_USER);
     })
     .catch(function () {});
@@ -72,13 +77,13 @@
       var a = newestWithProgress(data.anime);
       if (a) {
         fill('anime', 'Last watched',
-             (a.media.title.english || a.media.title.romaji) + ' — Ep ' + a.progress,
+             a.media.title.english || a.media.title.romaji, 'Ep ' + a.progress,
              a.media.siteUrl);
       }
       var m = newestWithProgress(data.manga);
       if (m) {
         fill('manga', 'Last read',
-             (m.media.title.english || m.media.title.romaji) + ' — Ch ' + m.progress,
+             m.media.title.english || m.media.title.romaji, 'Ch ' + m.progress,
              m.media.siteUrl);
       }
     })
