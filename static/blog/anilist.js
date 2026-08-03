@@ -8,12 +8,15 @@ window.AniList = function (opts) {
   if (!root) return;
 
   const isAnime = TYPE === 'ANIME';
+  // 'recent' sorts each shelf by when the entry was last touched, so the thing
+  // Kai read last sits first. Anything else keeps the score ranking.
+  const byRecent = opts.sort === 'recent';
 
   const QUERY = `query ($u: String, $t: MediaType) {
     MediaListCollection(userName: $u, type: $t) {
       lists {
         entries {
-          status score progress
+          status score progress updatedAt
           media {
             id
             title { romaji english }
@@ -86,7 +89,9 @@ window.AniList = function (opts) {
     const html = SECTIONS.map((s) => {
       const list = all.filter((e) => e.status === s.key);
       if (!list.length) return '';
-      list.sort((a, b) => (b.score || 0) - (a.score || 0) || titleOf(a.media).localeCompare(titleOf(b.media)));
+      list.sort(byRecent
+        ? (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0) || titleOf(a.media).localeCompare(titleOf(b.media))
+        : (a, b) => (b.score || 0) - (a.score || 0) || titleOf(a.media).localeCompare(titleOf(b.media)));
       return section(s.label, list);
     }).join('');
 
