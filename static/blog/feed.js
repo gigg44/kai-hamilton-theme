@@ -516,7 +516,7 @@
           <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy">
           <div class="scrim"></div><span class="yt-badge">YOUTUBE</span><div class="yt-play"></div>
         </div>${capTitle && i === 0 ? `<div class="yt-cap"><h4>${capTitle}</h4></div>` : ''}</div>`).join('');
-      inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
+      inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player + plink;
       wrap = 'media';
     } else {
       wrap = (group === 'photos' || group === 'watching' || group === 'games') ? 'media' : 'measure';
