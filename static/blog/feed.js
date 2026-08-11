@@ -483,10 +483,10 @@
     return ['notes','note','▍','Note'];
   }
 
-  function extractYtId(content) {
+  function extractYtIds(content) {
     // Covers: watch?v=, youtu.be/, embed/, shorts/, live/, v/ — in href attrs and iframe srcs
-    const m = content.match(/(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
-    return m ? m[1] : null;
+    const re = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:watch\?[^"'\s]*v=|embed\/|shorts\/|live\/|v\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+    return [...new Set([...content.matchAll(re)].map(m => m[1]))];
   }
 
   function renderLive(item) {
@@ -494,7 +494,7 @@
     const dateStr = MTHS[d.getMonth()] + ' ' + d.getDate();
     const yearStr = String(d.getFullYear());
     const content = item.content_html || '';
-    const ytId = extractYtId(content);
+    const ytIds = extractYtIds(content);
     const [group, dt, gl, label] = guessGroup(content, item.tags);
     const head = `<div class="date"><b>${dateStr}</b><small>${yearStr}</small></div><div class="node"></div>`;
     const kick = `<div class="kicker"><span class="gl">${gl}</span>${label}</div>`;
@@ -502,7 +502,7 @@
     const title = item.title ? `<h3 style="font-family:var(--font-head);font-weight:700;font-size:22px;margin:0 0 8px;letter-spacing:-.01em;">${item.title}</h3>` : '';
 
     let inner, wrap;
-    if (ytId) {
+    if (ytIds.length) {
       // Strip YouTube links and any iframe embeds micro.blog may have added
       const bodyText = content
         .replace(/<iframe[^>]*(?:youtube\.com|youtu\.be)[^>]*>[\s\S]*?<\/iframe>/gi, '')
@@ -510,11 +510,12 @@
         .replace(/<p>\s*<\/p>/g, '')
         .trim();
       const capTitle = item.title || '';
-      const player = `<div class="player pl-video">
-        <div class="yt-screen" data-yt="${ytId}" role="button" tabindex="0" aria-label="Play video">
-          <img src="https://img.youtube.com/vi/${ytId}/hqdefault.jpg" alt="" loading="lazy">
+      // Caption only under the first player — one post, one title
+      const player = ytIds.map((id, i) => `<div class="player pl-video">
+        <div class="yt-screen" data-yt="${id}" role="button" tabindex="0" aria-label="Play video">
+          <img src="https://img.youtube.com/vi/${id}/hqdefault.jpg" alt="" loading="lazy">
           <div class="scrim"></div><span class="yt-badge">YOUTUBE</span><div class="yt-play"></div>
-        </div>${capTitle ? `<div class="yt-cap"><h4>${capTitle}</h4></div>` : ''}</div>`;
+        </div>${capTitle && i === 0 ? `<div class="yt-cap"><h4>${capTitle}</h4></div>` : ''}</div>`).join('');
       inner = kick + (bodyText ? `<p class="body-text measure" style="margin-bottom:14px;">${bodyText}</p>` : '') + player;
       wrap = 'media';
     } else {
@@ -530,8 +531,8 @@
 
     const el = document.createElement('article');
     el.className = 'entry';
-    el.dataset.type = ytId ? 'video' : dt;
-    el.dataset.group = ytId ? 'watching' : group;
+    el.dataset.type = ytIds.length ? 'video' : dt;
+    el.dataset.group = ytIds.length ? 'watching' : group;
     el.dataset.liveId = item.id;
     el.innerHTML = head + `<div class="${wrap}">${inner}</div>`;
     return el;
