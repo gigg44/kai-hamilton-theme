@@ -1,0 +1,35 @@
+{{/* Open Graph + Twitter card tags. Micro.blog loads every .html in a plug-in's
+     layouts/partials inside <head>, so this needs no theme template override. */}}
+
+{{- $site := .Site.Title -}}
+{{- $url := .Permalink -}}
+
+{{/* Micro.blog posts usually have no title — fall back to the text itself. */}}
+{{- $text := .Plain | plainify | htmlUnescape | chomp -}}
+{{- $title := .Title -}}
+{{- if not $title -}}{{- $title = truncate 70 $text -}}{{- end -}}
+{{- if not $title -}}{{- $title = $site -}}{{- end -}}
+
+{{- $desc := truncate 200 $text -}}
+{{- if not $desc -}}{{- $desc = $site -}}{{- end -}}
+
+{{/* og:image = first image in the post, else the micro.blog avatar. */}}
+{{- $image := "https://micro.blog/Gigg44/avatar.jpg" -}}
+{{- $found := findRE `<img[^>]+src="[^"]+"` .Content 1 -}}
+{{- with $found -}}
+  {{- $image = replaceRE `^.*src="([^"]+)".*$` "$1" (index . 0) -}}
+{{- end -}}
+
+<meta property="og:site_name" content="{{ $site }}">
+<meta property="og:title" content="{{ $title }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:url" content="{{ $url }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:image" content="{{ $image }}">
+{{- if .IsPage }}
+<meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}">
+{{- end }}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{ $title }}">
+<meta name="twitter:description" content="{{ $desc }}">
+<meta name="twitter:image" content="{{ $image }}">
