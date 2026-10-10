@@ -342,7 +342,7 @@ img{display:block;max-width:100%;}
 .cover .score-badge{position:absolute;bottom:8px;right:8px;font-family:var(--font-mono);font-size:11px;font-weight:700;
   color:#fff;background:rgba(0,0,0,.72);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);
   padding:3px 7px;border-radius:6px;display:flex;align-items:center;gap:3px;}
-.cover .score-badge .st{color:#ffd34d;}
+.cover .score-badge .st{color:#F4F6F7;}
 .book-card .bc-sub{font-family:var(--font-mono);font-size:11.5px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.06em;margin-top:-2px;}
 .shelf .loading,.shelf .errbox{font-family:var(--font-mono);font-size:13px;color:var(--ink-3);padding:8px 0;}
 .shelf .errbox a{color:var(--accent);}
