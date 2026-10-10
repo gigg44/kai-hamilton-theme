@@ -9,19 +9,19 @@
   --font-body:'Newsreader',Georgia,serif;
   --font-mono:'Space Mono','SFMono-Regular',ui-monospace,monospace;
 
-  --accent: oklch(0.55 0.19 256);          /* primary, tweakable */
-  --accent-ink: oklch(0.45 0.19 256);
-
-  /* category hues — same L/C, varied hue, used only for dots + labels */
+  /* Shell palette (Design/tokens.css in the vault): one accent, one success colour, neutral ground.
+     Videos + links take crimson, podcasts take cobalt, every other category is neutral. */
+  --accent: #D40E4F;
+  --accent-ink: #BC1F4B;
   --c-note:  var(--ink-3);
-  --c-read:  oklch(0.62 0.13 80);
-  --c-video: oklch(0.60 0.17 25);
-  --c-photo: oklch(0.60 0.13 305);
-  --c-music: oklch(0.62 0.15 345);
-  --c-pod:   oklch(0.60 0.12 155);
-  --c-book:  oklch(0.64 0.13 50);
-  --c-game:  oklch(0.62 0.15 230);
-  --c-link:  var(--accent);
+  --c-read:  var(--ink-3);
+  --c-video: #BC1F4B;
+  --c-photo: var(--ink-3);
+  --c-music: var(--ink-3);
+  --c-pod:   #3856CF;
+  --c-book:  var(--ink-3);
+  --c-game:  var(--ink-3);
+  --c-link:  var(--accent-ink);
 
   --maxw: 1100px;
   --text-measure: 600px;
@@ -33,42 +33,33 @@
 
 /* ---- light (paper) : default ---- */
 :root,[data-theme="paper"]{
-  --bg:      oklch(0.972 0.008 85);
-  --surface: oklch(0.995 0.004 85);
-  --surface-2: oklch(0.955 0.009 85);
-  --ink:     oklch(0.24 0.012 60);
-  --ink-2:   oklch(0.46 0.011 60);
-  --ink-3:   oklch(0.63 0.010 60);
-  --border:  oklch(0.89 0.010 78);
-  --border-2:oklch(0.83 0.012 78);
-  --rail:    oklch(0.30 0.012 60);
-  --shadow: 0 1px 2px rgba(40,35,25,.05), 0 12px 30px -16px rgba(40,35,25,.22);
-}
-[data-theme="sepia"]{
-  --bg:      oklch(0.945 0.022 75);
-  --surface: oklch(0.975 0.016 78);
-  --surface-2: oklch(0.925 0.024 73);
-  --ink:     oklch(0.30 0.03 48);
-  --ink-2:   oklch(0.46 0.028 50);
-  --ink-3:   oklch(0.60 0.026 52);
-  --border:  oklch(0.86 0.026 68);
-  --border-2:oklch(0.80 0.03 66);
-  --rail:    oklch(0.36 0.03 48);
-  --shadow: 0 1px 2px rgba(70,45,20,.06), 0 12px 30px -16px rgba(70,45,20,.25);
+  --bg:      #F3F3F1;
+  --surface: #E9E9E6;
+  --surface-2: #DEDEDA;
+  --ink:     #1B1E21;
+  --ink-2:   #3C4146;
+  --ink-3:   #62676C;
+  --border:  #C9C9C4;
+  --border-2:#B6B6B0;
+  --rail:    #1B1E21;
+  --shadow: none;
 }
 [data-theme="dark"]{
-  --bg:      oklch(0.205 0.012 264);
-  --surface: oklch(0.245 0.014 264);
-  --surface-2: oklch(0.285 0.016 264);
-  --ink:     oklch(0.93 0.008 85);
-  --ink-2:   oklch(0.74 0.010 85);
-  --ink-3:   oklch(0.58 0.012 85);
-  --border:  oklch(0.34 0.014 264);
-  --border-2:oklch(0.42 0.016 264);
-  --rail:    oklch(0.55 0.014 264);
-  --accent:  oklch(0.70 0.15 256);
-  --accent-ink: oklch(0.78 0.14 256);
-  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 16px 40px -18px rgba(0,0,0,.7);
+  --bg:      #060708;
+  --surface: #0C0E10;
+  --surface-2: #14171A;
+  --ink:     #F4F6F7;
+  --ink-2:   #C9CED3;
+  --ink-3:   #818A93;
+  --border:  #252A2F;
+  --border-2:#3A4046;
+  --rail:    #818A93;
+  --accent:  #D40E4F;
+  --accent-ink: #EC5271;
+  --c-video: #EC5271;
+  --c-pod:   #5B81FE;
+  --c-link:  var(--accent-ink);
+  --shadow: none;
 }
 [data-cat="off"]{
   --c-read:var(--ink-3);--c-video:var(--ink-3);--c-photo:var(--ink-3);
