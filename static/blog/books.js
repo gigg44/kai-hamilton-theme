@@ -1,9 +1,9 @@
-/* Books page — live from micro.blog's bookshelves via the mb-books Worker.
+/* Books page — live from micro.blog's bookshelves via books.json.
    The bookshelf API needs a token that can publish posts, so it can never be
-   called from here; the Worker holds the token and returns plain JSON.
-   Source: gigg44/microblog-books-proxy. */
+   called from here; a script on Kusanagi (vault scripts/mb_books_json.py) holds the
+   token, writes plain JSON every 30 min, and nginx serves it with CORS. */
 (function () {
-  var PROXY = 'https://mb-books.email-16d.workers.dev/';
+  var PROXY = 'https://todo.kai-hamilton.de/books.json';
   var root = document.getElementById('books-root');
   if (!root) return;
 
