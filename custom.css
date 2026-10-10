@@ -1,0 +1,73 @@
+/* Paste into micro.blog: Design -> Edit CSS. Styles the stock-theme (Marfa) post pages
+   to match the plug-in homepage. Shell palette from the vault's Design/tokens.css.
+   Light only, like before (the old dark-mode block forced white). */
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Space+Mono:wght@400;700&display=swap");
+
+:root {
+  --bg: #F3F3F1; --surface: #E9E9E6; --ink: #1B1E21; --ink-2: #3C4146; --ink-3: #62676C;
+  --border: #C9C9C4; --accent: #D40E4F; --accent-ink: #BC1F4B;
+}
+
+html, body { background: var(--bg) !important; }
+body { color: var(--ink) !important; font: 19px/1.62 "Newsreader", Georgia, serif !important; -webkit-font-smoothing: antialiased; }
+#wrapper { max-width: 640px; }
+
+/* top nav: quiet mono labels, no frosted white bar */
+nav.main-nav { background: transparent !important; }
+nav.main-nav a { color: var(--ink-2) !important; font: 500 12px "Space Mono", ui-monospace, monospace !important; letter-spacing: .06em; text-transform: uppercase; box-shadow: none !important; }
+nav.main-nav a:hover { color: var(--ink) !important; }
+nav.main-nav a.cta { background: var(--bg); color: var(--accent-ink) !important; border: 1px solid var(--border); border-radius: 999px; }
+
+/* headings */
+h1, h2, h3, h4, h5, h6, .post-title { color: var(--ink) !important; font-family: "Space Grotesk", system-ui, sans-serif !important; letter-spacing: -.01em; }
+h1.p-name { font-size: 34px; font-weight: 600; line-height: 1.15; }
+.post-body h2 { font-size: 24px; } .post-body h3 { font-size: 19px; }
+
+/* date line */
+h2.headline, .dates { font: 400 11px "Space Mono", ui-monospace, monospace !important; letter-spacing: .09em; text-transform: uppercase; color: var(--ink-3) !important; }
+.dates, a.dates { box-shadow: none !important; text-decoration: none !important; color: var(--ink-3) !important; }
+
+/* body copy */
+.post-body, .post-content, p, li { color: var(--ink) !important; }
+.post-body p { margin-top: 1.1em; }
+
+/* links: crimson text with a hairline underline */
+a, p a, #footer a, #post-nav a, .post-body a { color: var(--accent-ink) !important; font-weight: 500; box-shadow: none !important; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; text-decoration-color: color-mix(in srgb, var(--accent) 45%, transparent); }
+a:hover, p a:hover { background: none !important; text-decoration-color: var(--accent); }
+nav.main-nav a, nav.main-nav a:hover { text-decoration: none; }
+
+/* quotes, code, rules, media */
+blockquote { border-left: 2px solid var(--accent); padding-left: 16px; margin: 1.2em 0; color: var(--ink-2); }
+code, code.highlighter-rouge, pre { background: var(--surface) !important; color: var(--ink-2) !important; border-radius: 6px; font-family: "Space Mono", ui-monospace, monospace; font-size: 14px; font-style: normal; }
+hr { border: 0; border-top: 1px solid var(--border); }
+.post-body img, .post-body video { border-radius: 8px; }
+
+/* footer + search */
+#footer, #footer a { color: var(--ink-3) !important; font: 11px "Space Mono", ui-monospace, monospace; letter-spacing: .09em; text-transform: uppercase; }
+#footer a { text-decoration: none; }
+.field { background: var(--surface) !important; color: var(--ink) !important; border: 1px solid var(--border) !important; border-radius: 7px; font: 14px "Space Mono", ui-monospace, monospace; box-shadow: none !important; }
+
+/* --- Auto photo-gallery grid (CSS-only, no JS needed) --- */
+.post-body:has(img + img) {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+}
+.post-body:has(img + img) > p:not(:has(img)) {
+  grid-column: 1 / -1;
+}
+.post-body:has(img + img) p:has(img) {
+  display: contents;
+}
+.post-body:has(img + img) img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+@media (max-width: 600px) {
+  .post-body:has(img + img) {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  }
+  .post-body:has(img + img) img { height: 140px; }
+}
